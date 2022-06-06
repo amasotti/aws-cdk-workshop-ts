@@ -3,6 +3,7 @@ const {DynamoDB, Lambda } = require('aws-sdk');
 exports.handler = async function(ev)  {
     console.log("Request Infos:", JSON.stringify(ev, undefined, 2));
 
+    // AWS SDK Clients
     const dynamo = new DynamoDB();
     const lambda = new Lambda();
 
@@ -17,7 +18,7 @@ exports.handler = async function(ev)  {
 
     const response = await lambda.invoke({
         FunctionName: process.env.DOWNSTREAM_FUNCTION_NAME,
-        Payload: JSON.stringify(ev,undefined,2)
+        Payload: JSON.stringify(ev)
     }).promise();
 
 

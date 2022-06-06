@@ -11,7 +11,7 @@ export interface HitCounterProps {
 
 export class HitCounter extends Construct {
 
-    public readonly handler: lambda.IFunction;
+    public readonly handler: lambda.Function;
 
     constructor(scope: Construct, id: string, props: HitCounterProps) {
         super(scope, id);
@@ -23,13 +23,19 @@ export class HitCounter extends Construct {
 
         this.handler = new lambda.Function(this, 'HitsCounterHandler', {
             runtime: lambda.Runtime.NODEJS_16_X,
-            handler: 'hitcounter.handler',
             code: lambda.Code.fromAsset('lambda'),
+            handler: 'hitcounter.handler',
             environment: {
                 DOWNSTREAM_FUNCTION_NAME: props.downstream.functionName,
                 HITS_TABLE_NAME: table.tableName
             }
         })
+
+        // Allow the Lambda function to write and read from the DB
+        table.grantFullAccess(this.handler);
+
+        // Allow the handler to invoke the downstream (target) function
+        props.downstream.grantInvoke(this.handler);
 
     }
 }

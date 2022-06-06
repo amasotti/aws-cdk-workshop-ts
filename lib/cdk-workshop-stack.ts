@@ -1,10 +1,11 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import { Construct } from 'constructs';
+import {HitCounter} from "./hitcounter";
 
-export class CdkWorkshopStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+
+export class CdkWorkshopStack extends cdk.Stack {
+  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Lambda function declaration
@@ -14,9 +15,13 @@ export class CdkWorkshopStack extends Stack {
       handler: 'hello.handler' // look into a file called hello.js, take the function called 'handler'
     })
 
+    const helloCounter = new HitCounter(this, 'HelloLambdaHitCounter', {
+      downstream: hello
+    })
+
     // API GATEWAY to make the lambda function accessible from the public internet
     new apigw.LambdaRestApi(this, 'HelloEndpoint', {
-      handler: hello,
+      handler: helloCounter.handler,
     })
 
   }
