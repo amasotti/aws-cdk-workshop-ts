@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import {HitCounter} from "./hitcounter";
+import { TableViewer } from "cdk-dynamo-table-viewer";
 
 
 export class CdkWorkshopStack extends cdk.Stack {
@@ -17,6 +18,12 @@ export class CdkWorkshopStack extends cdk.Stack {
 
     const helloCounter = new HitCounter(this, 'HelloLambdaHitCounter', {
       downstream: hello
+    })
+
+    const viewer = new TableViewer(this, 'HitsViewer', {
+      table: helloCounter.table,
+      title: 'Hits Counts - CDK Workshop',
+      endpointType: apigw.EndpointType.EDGE
     })
 
     // API GATEWAY to make the lambda function accessible from the public internet
