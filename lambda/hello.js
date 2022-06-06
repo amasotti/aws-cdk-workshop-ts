@@ -3,6 +3,6 @@ exports.handler = async function (event) {
     return {
         statusCode: 200,
         headers: { "Content-Type": "text/plain"},
-        body:`Hello World! You have hit ${event.path}\n`
+        body:`Hello Dude and Good afternoon! You have hit ${event.path}\n`
     };
 }
